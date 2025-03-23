@@ -7,6 +7,7 @@ export default function ProjectInfo(props) {
     const handleAddTask = (e) => {
         e.preventDefault();
         props.onAddTask(id, taskRef.current.value)
+        taskRef.current.value = ""
     }
 
     const listOfTasks = props.listTasks?.map(item => {
