@@ -15,24 +15,52 @@ function App() {
     handleCloseFormCreate();
   }
 
-  const handleModifyTasks = (parentId, task) => {
-    setListTasks(prev => {
-      let newData = [...prev]
-      let index = newData?.length > 0 && newData.findIndex(item => item.parentId === parentId);
-
-      if (index && index !== -1) {
-        newData[index].listTask.push(task)
-      } else {
-        let data = {
-          parentId: parentId,
-          listTask: [task]
-        }
-        newData.push(data);
+  const handleRemoveTask = (index, listIndex, parentId = null)=>{
+    if(parentId !== null){
+      setListTasks(prev=>{
+        let data = [...prev];
+        console.log(data);
+        
+        return data.filter(item=>item.parentId !== parentId)
+      })
+    }
+    setListTasks(prev=>{
+      let newData = [...prev];
+      newData[listIndex] = {
+        ...newData[listIndex],
+        listTask: newData[listIndex]?.listTask.filter((_, i)=> i !== index)
       }
       return newData;
     })
   }
+  
+  const handleRemoveProject = (parentId)=>{
+    setListProject(prev=>{
+      let newData = [...prev];
+      return newData.filter(item=>item.id !== parentId)
+    })
+    handleRemoveTask("","",parentId);
+    setShowProjectInfo(false);
+  }
 
+  const handleModifyTasks = (parentId, task) => {
+    setListTasks(prev => {
+      let newData = [...prev]
+      let index = newData.findIndex(item => item.parentId === parentId);
+      if (index !== -1) {
+        newData[index] = {
+          ...newData[index],
+          listTask: [...newData[index].listTask, task]
+        }
+      } else {
+        newData.push({
+          parentId: parentId,
+          listTask: [task]
+        });
+      }
+      return newData;
+    })
+  }
 
   const onSelectProject = (data) => {
     setSelectedProject(data)
@@ -66,6 +94,8 @@ function App() {
           />}
           {showProjectInfo &&
             <ProjectInfo
+              onDeleteProject={handleRemoveProject}
+              onRemoveTask={handleRemoveTask}
               listTasks={listTasks}
               onAddTask={handleModifyTasks}
               selectedProject={selectedProject} />}
